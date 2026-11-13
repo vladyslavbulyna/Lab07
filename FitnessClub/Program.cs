@@ -80,6 +80,19 @@ namespace FitnessClub
         }
 
         /// <summary>
+        /// Рахує вартість абонемента й повертає її як результат.
+        /// Метод нічого не виводить: його можна викликати з будь-якого місця —
+        /// для таблиці, для підсумку чи для перевірки.
+        /// </summary>
+        /// <param name="months">тривалість занять у місяцях</param>
+        /// <param name="rate">тариф за місяць, грн</param>
+        /// <param name="serviceFee">сервісний збір, грн</param>
+        static double CalculateCost(double months, double rate, double serviceFee)
+        {
+            return rate * months + serviceFee * Math.Sqrt(months);
+        }
+
+        /// <summary>
         /// Пункт 2: табулювання вартості від тривалості занять.
         /// </summary>
         static void ShowCostTable()
@@ -97,7 +110,8 @@ namespace FitnessClub
             // 1e-9 компенсує похибку double, інакше останній рядок може зникнути
             for (double t = from; t <= to + 1e-9; t += step)
             {
-                double cost = 800.0 * t + 150.0 * Math.Sqrt(t);
+                // розрахунок і виведення розділені: рахує CalculateCost, друкує цей цикл
+                double cost = CalculateCost(t, 800.0, 150.0);
                 Console.WriteLine($"{t,14:F1}{cost,16:F2}");
             }
 
