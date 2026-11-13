@@ -7,47 +7,48 @@ namespace FitnessClub
     {
         static void Main(string[] args)
         {
+            // UTF-8, щоб українські літери в консолі не перетворювалися на знаки питання
             Console.OutputEncoding = Encoding.UTF8;
 
             bool running = true;
+
+            // Головний цикл меню: працює, доки користувач не обере пункт 0
             while (running)
             {
-                Console.WriteLine("=== Фітнес-клуб ===");
-                Console.WriteLine("1 — про програму");
-                Console.WriteLine("2 — розрахунок вартості тренувань");
-                Console.WriteLine("3 — завантаження тренерів за тиждень");
-                Console.WriteLine("0 — вихід");
-                Console.Write("Ваш вибір: ");
-
+                ShowMenu();
                 string? choice = Console.ReadLine();
                 Console.WriteLine();
 
+                // У Main лишилися тільки виклики: що саме робиться — видно з назв методів
                 switch (choice)
                 {
-                    case "1":
-                        ShowAbout();
-                        Pause();
-                        break;
-                    case "2":
-                        ShowCostTable();
-                        Pause();
-                        break;
-                    case "3":
-                        ShowWorkloadTable();
-                        Pause();
-                        break;
-                    case "0":
-                        running = false;
-                        Console.WriteLine("До побачення!");
-                        break;
-                    default:
-                        Console.WriteLine("Немає такого пункту. Спробуйте ще раз.");
-                        Pause();
-                        break;
+                    case "1": ShowAbout(); Pause(); break;
+                    case "2": ShowCostTable(); Pause(); break;
+                    case "3": ShowWorkloadTable(); Pause(); break;
+                    case "0": running = false; Console.WriteLine("До побачення!"); break;
+                    default: Console.WriteLine("Немає такого пункту. Спробуйте ще раз."); Pause(); break;
                 }
             }
         }
 
+        /// <summary>
+        /// Виводить пункти головного меню. Метод нічого не читає й не повертає:
+        /// його єдина робота — показати текст меню.
+        /// </summary>
+        static void ShowMenu()
+        {
+            Console.WriteLine("=== Фітнес-клуб ===");
+            Console.WriteLine("1 — про програму");
+            Console.WriteLine("2 — розрахунок вартості тренувань");
+            Console.WriteLine("3 — завантаження тренерів за тиждень");
+            Console.WriteLine("0 — вихід");
+            Console.Write("Ваш вибір: ");
+        }
+
+        /// <summary>
+        /// Пауза перед поверненням у меню й очищення екрана.
+        /// При перенаправленому вводі (запуск із файлу) клавішу не чекаємо.
+        /// </summary>
         static void Pause()
         {
             Console.WriteLine("\nНатисніть будь-яку клавішу...");
@@ -58,6 +59,9 @@ namespace FitnessClub
             }
         }
 
+        /// <summary>
+        /// Пункт 1: тема проєкту, головна сутність і перелік її полів.
+        /// </summary>
         static void ShowAbout()
         {
             Console.WriteLine("=== Про програму ===");
@@ -75,6 +79,9 @@ namespace FitnessClub
             Console.WriteLine("Підсумкова величина: абонементи, що добігають кінця протягом тижня.");
         }
 
+        /// <summary>
+        /// Пункт 2: табулювання вартості від тривалості занять.
+        /// </summary>
         static void ShowCostTable()
         {
             Console.WriteLine("=== Таблиця вартості абонемента / тренувань ===");
@@ -87,14 +94,19 @@ namespace FitnessClub
             Console.WriteLine($"{"Період (міс)",14}{"Вартість (грн)",16}");
             Console.WriteLine(new string('-', 30));
 
-            // додаємо 1e-9 щоб не зникав останній рядок через неточність double
+            // 1e-9 компенсує похибку double, інакше останній рядок може зникнути
             for (double t = from; t <= to + 1e-9; t += step)
             {
                 double cost = 800.0 * t + 150.0 * Math.Sqrt(t);
                 Console.WriteLine($"{t,14:F1}{cost,16:F2}");
             }
+
+            Console.WriteLine(new string('-', 30));
         }
 
+        /// <summary>
+        /// Пункт 3: таблиця завантаження тренерів, підсумки рядків і стовпців.
+        /// </summary>
         static void ShowWorkloadTable()
         {
             Console.WriteLine("=== Завантаження тренерів за тиждень ===");
