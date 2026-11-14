@@ -23,7 +23,7 @@ namespace FitnessClub
                 switch (choice)
                 {
                     case "1": ShowAbout(); Pause(); break;
-                    case "2": ShowCostTable(1.0, 5.5, 0.5); Pause(); break;
+                    case "2": RunCostTable(); Pause(); break;
                     case "3": ShowWorkloadTable(); Pause(); break;
                     case "0": running = false; Console.WriteLine("До побачення!"); break;
                     default: Console.WriteLine("Немає такого пункту. Спробуйте ще раз."); Pause(); break;
@@ -93,15 +93,29 @@ namespace FitnessClub
         }
 
         /// <summary>
+        /// Пункт 2: питає в користувача межі й крок і передає їх у ShowCostTable.
+        /// Метод лише збирає введення — малює таблицю вже інший метод.
+        /// </summary>
+        static void RunCostTable()
+        {
+            Console.WriteLine("=== Таблиця вартості абонемента / тренувань ===");
+            Console.WriteLine("Залежність вартості від тривалості занять (місяці / блоки):");
+
+            double from = ReadDouble("Початок діапазону (міс): ", 0.5, 24);
+            double to = ReadDouble("Кінець діапазону (міс): ", from, 36);
+            double step = ReadDouble("Крок (міс): ", 0.1, 12);
+
+            Console.WriteLine();
+            ShowCostTable(from, to, step);
+        }
+
+        /// <summary>
         /// Пункт 2: табулювання вартості від тривалості занять.
         /// Діапазон і крок приходять параметрами, тому той самий метод
         /// можна викликати з іншими межами, нічого в ньому не змінюючи.
         /// </summary>
         static void ShowCostTable(double from, double to, double step)
         {
-            Console.WriteLine("=== Таблиця вартості абонемента / тренувань ===");
-            Console.WriteLine("Залежність вартості від тривалості занять (місяці / блоки):");
-
             Console.WriteLine($"{"Період (міс)",14}{"Вартість (грн)",16}");
             Console.WriteLine(new string('-', 30));
 
@@ -117,25 +131,70 @@ namespace FitnessClub
         }
 
         /// <summary>
+        /// Питає дробове число й повертає його. Поки введення не число
+        /// або не входить у межі — повідомляє про помилку й питає знову.
+        /// Крім підказки та повідомлень про помилку, метод нічого не друкує.
+        /// </summary>
+        static double ReadDouble(string prompt, double min, double max)
+        {
+            while (true)
+            {
+                Console.Write(prompt);
+                string? input = Console.ReadLine();
+
+                if (!double.TryParse(input, out double value))
+                {
+                    Console.WriteLine("Помилка: це не число. Спробуйте ще раз.");
+                    continue;
+                }
+
+                if (value < min || value > max)
+                {
+                    Console.WriteLine($"Помилка: число має бути від {min:F1} до {max:F1}.");
+                    continue;
+                }
+
+                return value;
+            }
+        }
+
+        /// <summary>
+        /// Те саме, що ReadDouble, але для цілих чисел: рядки й стовпці
+        /// таблиці не можуть бути дробовими.
+        /// </summary>
+        static int ReadInt(string prompt, int min, int max)
+        {
+            while (true)
+            {
+                Console.Write(prompt);
+                string? input = Console.ReadLine();
+
+                if (!int.TryParse(input, out int value))
+                {
+                    Console.WriteLine("Помилка: введіть ціле число. Спробуйте ще раз.");
+                    continue;
+                }
+
+                if (value < min || value > max)
+                {
+                    Console.WriteLine($"Помилка: число має бути від {min} до {max}.");
+                    continue;
+                }
+
+                return value;
+            }
+        }
+
+        /// <summary>
         /// Пункт 3: таблиця завантаження тренерів, підсумки рядків і стовпців.
         /// </summary>
         static void ShowWorkloadTable()
         {
             Console.WriteLine("=== Завантаження тренерів за тиждень ===");
 
-            Console.Write("Введіть кількість тренерів (рядків): ");
-            if (!int.TryParse(Console.ReadLine(), out int rows) || rows <= 0)
-            {
-                Console.WriteLine("Помилка: потрібно ввести додатне число.");
-                return;
-            }
-
-            Console.Write("Введіть кількість днів (стовпців): ");
-            if (!int.TryParse(Console.ReadLine(), out int cols) || cols <= 0)
-            {
-                Console.WriteLine("Помилка: потрібно ввести додатне число.");
-                return;
-            }
+            // обидва числа читає ReadInt: він сам перепитає, якщо введено не те
+            int rows = ReadInt("Кількість тренерів (рядків): ", 1, 20);
+            int cols = ReadInt("Кількість днів (стовпців): ", 1, 14);
 
             Console.WriteLine();
 
