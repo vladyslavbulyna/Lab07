@@ -23,7 +23,7 @@ namespace FitnessClub
                 switch (choice)
                 {
                     case "1": ShowAbout(); Pause(); break;
-                    case "2": ShowCostTable(); Pause(); break;
+                    case "2": ShowCostTable(1.0, 5.5, 0.5); Pause(); break;
                     case "3": ShowWorkloadTable(); Pause(); break;
                     case "0": running = false; Console.WriteLine("До побачення!"); break;
                     default: Console.WriteLine("Немає такого пункту. Спробуйте ще раз."); Pause(); break;
@@ -94,15 +94,13 @@ namespace FitnessClub
 
         /// <summary>
         /// Пункт 2: табулювання вартості від тривалості занять.
+        /// Діапазон і крок приходять параметрами, тому той самий метод
+        /// можна викликати з іншими межами, нічого в ньому не змінюючи.
         /// </summary>
-        static void ShowCostTable()
+        static void ShowCostTable(double from, double to, double step)
         {
             Console.WriteLine("=== Таблиця вартості абонемента / тренувань ===");
             Console.WriteLine("Залежність вартості від тривалості занять (місяці / блоки):");
-
-            double from = 1.0;
-            double to = 5.5;
-            double step = 0.5;
 
             Console.WriteLine($"{"Період (міс)",14}{"Вартість (грн)",16}");
             Console.WriteLine(new string('-', 30));
