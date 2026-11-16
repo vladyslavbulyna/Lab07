@@ -31,6 +31,7 @@ namespace FitnessClub
                     case "2": RunCostTable(); Pause(); break;
                     case "3": ShowWorkloadTable(); Pause(); break;
                     case "4": AddValue(values, ref count, ReadDouble("Ціна, грн: ", 1, 100000)); Pause(); break;
+                    case "5": ShowStatistics(values, count); Pause(); break;
                     case "6": ShowValues(values, count); Pause(); break;
                     case "0": running = false; Console.WriteLine("До побачення!"); break;
                     default: Console.WriteLine("Немає такого пункту. Спробуйте ще раз."); Pause(); break;
@@ -49,6 +50,7 @@ namespace FitnessClub
             Console.WriteLine("2 — розрахунок вартості тренувань");
             Console.WriteLine("3 — завантаження тренерів за тиждень");
             Console.WriteLine("4 — додати вартість тренування");
+            Console.WriteLine("5 — статистика витрат");
             Console.WriteLine("6 — показати всі значення");
             Console.WriteLine("0 — вихід");
             Console.Write("Ваш вибір: ");
@@ -237,6 +239,75 @@ namespace FitnessClub
             }
 
             Console.WriteLine(new string('-', 23));
+        }
+
+        /// <summary>
+        /// Рахує суму й середнє. Два результати повертаються через out,
+        /// бо через return можна віддати лише одне значення.
+        /// </summary>
+        static void Statistics(double[] values, int count, out double sum, out double average)
+        {
+            sum = 0;
+
+            for (int i = 0; i < count; i++)
+            {
+                sum += values[i];
+            }
+
+            // без перевірки count > 0 порожній набір дав би ділення на нуль,
+            // а double тихо повернув би NaN і зіпсував усі подальші обчислення
+            average = count > 0 ? sum / count : 0;
+        }
+
+        /// <summary>
+        /// Знаходить найбільше значення та його номер. Порожній набір
+        /// оброблено окремо: до values[0] не звертаємось, поки count == 0.
+        /// </summary>
+        static void FindMax(double[] values, int count, out double max, out int index)
+        {
+            max = 0;
+            index = 0;
+
+            if (count == 0)
+            {
+                return;
+            }
+
+            max = values[0];
+            index = 1;
+
+            for (int i = 1; i < count; i++)
+            {
+                if (values[i] > max)
+                {
+                    max = values[i];
+                    index = i + 1;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Пункт 5: підсумкові показники масиву. Метод лише виводить:
+        /// усі числа він отримує з out-параметрів інших методів.
+        /// </summary>
+        static void ShowStatistics(double[] values, int count)
+        {
+            Console.WriteLine("=== Статистика витрат на тренування ===");
+
+            // порожній набір — окремий випадок, а не «нульове середнє»
+            if (count == 0)
+            {
+                Console.WriteLine("Масив порожній: статистику немає з чого рахувати.");
+                return;
+            }
+
+            Statistics(values, count, out double sum, out double average);
+            FindMax(values, count, out double max, out int maxIndex);
+
+            Console.WriteLine($"Записів: {count}");
+            Console.WriteLine($"Сума: {sum:F2} грн");
+            Console.WriteLine($"Середнє: {average:F2} грн");
+            Console.WriteLine($"Найбільша вартість: {max:F2} грн (запис №{maxIndex})");
         }
 
         /// <summary>
