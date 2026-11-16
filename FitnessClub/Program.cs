@@ -10,6 +10,11 @@ namespace FitnessClub
             // UTF-8, щоб українські літери в консолі не перетворювалися на знаки питання
             Console.OutputEncoding = Encoding.UTF8;
 
+            // Дані проєкту живуть у Main: масив фіксованої довжини на 100 вартостей
+            // і лічильник, скільки клітинок уже заповнено. Методи отримають їх параметрами.
+            double[] values = new double[100];
+            int count = 0;
+
             bool running = true;
 
             // Головний цикл меню: працює, доки користувач не обере пункт 0
@@ -25,6 +30,8 @@ namespace FitnessClub
                     case "1": ShowAbout(); Pause(); break;
                     case "2": RunCostTable(); Pause(); break;
                     case "3": ShowWorkloadTable(); Pause(); break;
+                    case "4": AddValue(values, ref count, ReadDouble("Ціна, грн: ", 1, 100000)); Pause(); break;
+                    case "6": ShowValues(values, count); Pause(); break;
                     case "0": running = false; Console.WriteLine("До побачення!"); break;
                     default: Console.WriteLine("Немає такого пункту. Спробуйте ще раз."); Pause(); break;
                 }
@@ -41,6 +48,8 @@ namespace FitnessClub
             Console.WriteLine("1 — про програму");
             Console.WriteLine("2 — розрахунок вартості тренувань");
             Console.WriteLine("3 — завантаження тренерів за тиждень");
+            Console.WriteLine("4 — додати вартість тренування");
+            Console.WriteLine("6 — показати всі значення");
             Console.WriteLine("0 — вихід");
             Console.Write("Ваш вибір: ");
         }
@@ -183,6 +192,51 @@ namespace FitnessClub
 
                 return value;
             }
+        }
+
+        /// <summary>
+        /// Додає вартість у першу вільну клітинку масиву.
+        /// Масив іде без ref — він посилальний, зміна клітинки видно в Main.
+        /// Лічильник — int, тому він передається через ref: без ref збільшення
+        /// залишилося б усередині методу й одразу забулося б.
+        /// </summary>
+        static void AddValue(double[] values, ref int count, double value)
+        {
+            if (count == values.Length)
+            {
+                Console.WriteLine("Місця більше немає: масив на 100 елементів заповнений.");
+                return;
+            }
+
+            values[count] = value;
+            count++;
+
+            Console.WriteLine($"Додано {value:F2} грн. Усього записів: {count}.");
+        }
+
+        /// <summary>
+        /// Показує заповнену частину масиву таблицею з номерами.
+        /// Всередині нічого не питається: масив і лічильник прийшли параметрами.
+        /// </summary>
+        static void ShowValues(double[] values, int count)
+        {
+            Console.WriteLine("=== Вартості тренувань (грн) ===");
+
+            if (count == 0)
+            {
+                Console.WriteLine("Масив порожній: спочатку додайте значення (пункт 4).");
+                return;
+            }
+
+            Console.WriteLine($"{"№",5}{"Вартість (грн)",18}");
+            Console.WriteLine(new string('-', 23));
+
+            for (int i = 0; i < count; i++)
+            {
+                Console.WriteLine($"{i + 1,5}{values[i],18:F2}");
+            }
+
+            Console.WriteLine(new string('-', 23));
         }
 
         /// <summary>
