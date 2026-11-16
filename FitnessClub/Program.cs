@@ -31,8 +31,9 @@ namespace FitnessClub
                     case "2": RunCostTable(); Pause(); break;
                     case "3": ShowWorkloadTable(); Pause(); break;
                     case "4": AddValue(values, ref count, ReadDouble("Ціна, грн: ", 1, 100000)); Pause(); break;
-                    case "5": ShowStatistics(values, count); Pause(); break;
-                    case "6": ShowValues(values, count); Pause(); break;
+                    case "5": RemoveAt(values, ref count, ReadInt("Номер для видалення: ", 1, values.Length)); Pause(); break;
+                    case "6": ShowStatistics(values, count); Pause(); break;
+                    case "7": ShowValues(values, count); Pause(); break;
                     case "0": running = false; Console.WriteLine("До побачення!"); break;
                     default: Console.WriteLine("Немає такого пункту. Спробуйте ще раз."); Pause(); break;
                 }
@@ -50,8 +51,9 @@ namespace FitnessClub
             Console.WriteLine("2 — розрахунок вартості тренувань");
             Console.WriteLine("3 — завантаження тренерів за тиждень");
             Console.WriteLine("4 — додати вартість тренування");
-            Console.WriteLine("5 — статистика витрат");
-            Console.WriteLine("6 — показати всі значення");
+            Console.WriteLine("5 — видалити за номером");
+            Console.WriteLine("6 — статистика витрат");
+            Console.WriteLine("7 — показати всі значення");
             Console.WriteLine("0 — вихід");
             Console.Write("Ваш вибір: ");
         }
@@ -239,6 +241,32 @@ namespace FitnessClub
             }
 
             Console.WriteLine(new string('-', 23));
+        }
+
+        /// <summary>
+        /// Видаляє запис із заданим номером: зсуває наступні елементи вліво
+        /// й зменшує лічильник. Номер неправильний — повідомлення й вихід без змін.
+        /// </summary>
+        static void RemoveAt(double[] values, ref int count, int index)
+        {
+            if (index < 1 || index > count)
+            {
+                Console.WriteLine($"Елемента з номером {index} немає: усього записів {count}. Масив не змінено.");
+                return;
+            }
+
+            // зсув ліворуч: кожен наступний запис стає на місце видаленого
+            for (int i = index - 1; i < count - 1; i++)
+            {
+                values[i] = values[i + 1];
+            }
+
+            count--;
+
+            // останню клітинку затираємо, щоб старе значення не лишилося за лічильником
+            values[count] = 0;
+
+            Console.WriteLine($"Видалено запис №{index}. Усього записів: {count}.");
         }
 
         /// <summary>
