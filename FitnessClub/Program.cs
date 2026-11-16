@@ -30,12 +30,22 @@ namespace FitnessClub
                     case "1": ShowAbout(); Pause(); break;
                     case "2": RunCostTable(); Pause(); break;
                     case "3": ShowWorkloadTable(); Pause(); break;
-                    case "4": AddValue(values, ref count, ReadDouble("Ціна, грн: ", 1, 100000)); Pause(); break;
-                    case "5": RemoveAt(values, ref count, ReadInt("Номер для видалення: ", 1, values.Length)); Pause(); break;
+                    case "4":
+                        AddValue(values, ref count, ReadDouble("Ціна, грн: ", 1, 100000));
+                        Pause();
+                        break;
+                    case "5":
+                        RemoveAt(values, ref count, ReadInt("Номер: ", 1, values.Length));
+                        Pause();
+                        break;
                     case "6": ShowStatistics(values, count); Pause(); break;
                     case "7": ShowValues(values, count); Pause(); break;
+                    case "8": ShowReferenceDemo(); Pause(); break;
                     case "0": running = false; Console.WriteLine("До побачення!"); break;
-                    default: Console.WriteLine("Немає такого пункту. Спробуйте ще раз."); Pause(); break;
+                    default:
+                        Console.WriteLine("Немає такого пункту. Спробуйте ще раз.");
+                        Pause();
+                        break;
                 }
             }
         }
@@ -54,6 +64,7 @@ namespace FitnessClub
             Console.WriteLine("5 — видалити за номером");
             Console.WriteLine("6 — статистика витрат");
             Console.WriteLine("7 — показати всі значення");
+            Console.WriteLine("8 — дослід: значиме та посилальне передавання");
             Console.WriteLine("0 — вихід");
             Console.Write("Ваш вибір: ");
         }
@@ -89,7 +100,8 @@ namespace FitnessClub
             Console.WriteLine("5. int кількість місяців — тривалість дії абонемента");
             Console.WriteLine("6. double ціна — вартість абонемента в грн");
             Console.WriteLine("7. bool чи активний — статус дії абонемента\n");
-            Console.WriteLine("Підсумкова величина: абонементи, що добігають кінця протягом тижня.");
+            Console.WriteLine("Підсумкова величина: абонементи, що добігають кінця");
+            Console.WriteLine("протягом тижня.");
         }
 
         /// <summary>
@@ -112,7 +124,7 @@ namespace FitnessClub
         static void RunCostTable()
         {
             Console.WriteLine("=== Таблиця вартості абонемента / тренувань ===");
-            Console.WriteLine("Залежність вартості від тривалості занять (місяці / блоки):");
+            Console.WriteLine("Вартість залежно від тривалості занять (міс. / блоки):");
 
             double from = ReadDouble("Початок діапазону (міс): ", 0.5, 24);
             double to = ReadDouble("Кінець діапазону (міс): ", from, 36);
@@ -228,7 +240,7 @@ namespace FitnessClub
 
             if (count == 0)
             {
-                Console.WriteLine("Масив порожній: спочатку додайте значення (пункт 4).");
+                Console.WriteLine("Масив порожній: спочатку додайте значення (п. 4).");
                 return;
             }
 
@@ -251,7 +263,7 @@ namespace FitnessClub
         {
             if (index < 1 || index > count)
             {
-                Console.WriteLine($"Елемента з номером {index} немає: усього записів {count}. Масив не змінено.");
+                Console.WriteLine($"Немає запису №{index}: усього {count}. Змін немає.");
                 return;
             }
 
@@ -273,7 +285,8 @@ namespace FitnessClub
         /// Рахує суму й середнє. Два результати повертаються через out,
         /// бо через return можна віддати лише одне значення.
         /// </summary>
-        static void Statistics(double[] values, int count, out double sum, out double average)
+        static void Statistics(double[] values, int count,
+                               out double sum, out double average)
         {
             sum = 0;
 
@@ -392,6 +405,60 @@ namespace FitnessClub
             }
 
             Console.WriteLine($"{grandTotal,10}");
+        }
+
+        /// <summary>
+        /// Намагається збільшити int-параметр БЕЗ ref. Метод отримав копію,
+        /// тому в Main число не зміниться.
+        /// </summary>
+        static void TryIncrease(int price)
+        {
+            price = price + 100;
+        }
+
+        /// <summary>
+        /// Те саме число, але через ref: метод працює з оригіналом,
+        /// тому зміна видно в Main.
+        /// </summary>
+        static void IncreaseRef(ref int price)
+        {
+            price = price + 100;
+        }
+
+        /// <summary>
+        /// Міняє елемент масиву. Масив посилальний, тому зміна клітинки
+        /// видно в Main без ref і без return.
+        /// </summary>
+        static void IncreaseFirst(double[] values)
+        {
+            values[0] = values[0] + 100;
+        }
+
+        /// <summary>
+        /// Пункт 8: дослід, який показує різницю між значимим і посилальним
+        /// передаванням. Друкує стан до і після кожного виклику.
+        /// </summary>
+        static void ShowReferenceDemo()
+        {
+            Console.WriteLine("=== Дослід: значиме та посилальне передавання ===");
+
+            int price = 1000;
+            Console.WriteLine($"int price до виклику: {price}");
+
+            TryIncrease(price);
+            Console.WriteLine($"після TryIncrease(price): {price}");
+            Console.WriteLine("   не змінилося: метод міняв копію, а не оригінал");
+
+            IncreaseRef(ref price);
+            Console.WriteLine($"після IncreaseRef(ref price): {price}");
+            Console.WriteLine("   змінилося: працювали з оригіналом через ref");
+
+            double[] sample = { 500.0, 700.0, 900.0 };
+            Console.WriteLine($"double[] sample[0] до виклику: {sample[0]:F2}");
+
+            IncreaseFirst(sample);
+            Console.WriteLine($"після IncreaseFirst(sample): {sample[0]:F2}");
+            Console.WriteLine("   змінилося: копіювалася лише адреса масиву");
         }
     }
 }
